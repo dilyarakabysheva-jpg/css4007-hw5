@@ -1,0 +1,80 @@
+Scenario: S06 - Instructions then local ticket
+Part: 2   graph_variant: default
+Status snapshot: normal
+Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
+Run at: 2026-11-08T19:41:17
+NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
+
+Storage folder (reset before scenario: True): local-storage/scenarios-fake
+--- Process 1 (pid 43256) ---
+Command: python run_scenarios.py --child S06 --segment 0 --fake-model
+
+user_id=demo-user-a  thread_id=s06  status_profile=normal
+USER: Show me the Wi-Fi troubleshooting steps.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: find_instructions({"topic": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT find_instructions: {"found": true, "topic": "wifi", "instruction_id": "GUIDE-WIFI", "title": "Connect to the practice campus network", "steps": ["Check that Wi-Fi is enabled and airplane mode is off.", "Select the fictional Campus-Demo network.", "If connection fails, forget the saved network and try connecting again.", "If the problem remains, check the service status before preparing a ticket."], "source": "data/helpdesk.json"}
+       reference_ids = ['GUIDE-WIFI']
+       tickets = []
+  4. agent
+       MODEL ANSWER: [FAKE MODEL] Here are the instructions from GUIDE-WIFI:
+  1. Check that Wi-Fi is enabled and airplane mode is off.
+  2. Select the fictional Campus-Demo network.
+  3. If connection fails, forget the saved network and try connecting again.
+  4. If the problem remains, check the service status before preparing a ticket.
+       model_calls = 2
+Information sources used: REFERENCE FILE data/helpdesk.json (find_instructions)
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: [FAKE MODEL] Here are the instructions from GUIDE-WIFI:
+  1. Check that Wi-Fi is enabled and airplane mode is off.
+  2. Select the fictional Campus-Demo network.
+  3. If connection fails, forget the saved network and try connecting again.
+  4. If the problem remains, check the service status before preparing a ticket.
+
+user_id=demo-user-a  thread_id=s06  status_profile=normal
+USER: I enabled Wi-Fi and forgot the saved network, but Campus-Demo still will not connect. Check whether Wi-Fi is down. If it is operating, prepare a ticket about this problem.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 2 earlier messages
+    - HumanMessage: Show me the Wi-Fi troubleshooting steps.
+    - AIMessage: [FAKE MODEL] Here are the instructions from GUIDE-WIFI:   1. Check that Wi-Fi is enabled and airplane mode is off.   2. Select the fictional Campus-Demo network...
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: check_service_status({"service": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT check_service_status: {"service": "wifi", "status": "operational", "message": "The demo Wi-Fi service has no reported outage.", "status_profile": "normal", "source": "data/service_status.json"}
+       reference_ids = ['GUIDE-WIFI']
+       tickets = []
+  4. agent
+       MODEL REQUESTS TOOLS: prepare_ticket({"category": "wifi", "summary": "Wi-Fi problem: Campus-Demo still will not connect", "steps_tried": ["I enabled Wi-Fi", "forgot the saved network"]})
+       model_calls = 2
+  5. tools
+       TOOL RESULT prepare_ticket: {"created": true, "ticket_id": "TKT-20261108-194117-0535", "file": "outputs/fake_model/tickets/TKT-20261108-194117-0535.json", "ticket": {"ticket_id": "TKT-20261108-194117-0535", "status": "draft", "user_id": "demo-user-a", "thread_id": "s06", "category": "wifi", "summary": "Wi-Fi problem: Campus-Demo still will not connect", "steps_tried": ["I enabled Wi-Fi", "forgot the saved network"], "service_status": "operational", "status_profile": "normal", "reference_ids": ["GUIDE-WIFI"]}, "message": "Local draft saved. Nothing was sent to a real helpdesk."}
+       reference_ids = ['GUIDE-WIFI']
+       tickets = ['outputs/fake_model/tickets/TKT-20261108-194117-0535.json']
+  6. agent
+       MODEL ANSWER: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-194117-0535.json (service status: operational). Nothing has been sent.
+       model_calls = 3
+Information sources used: STATUS SNAPSHOT data/service_status.json profile=normal, CONVERSATION MEMORY (SQLite checkpoint)
+Model calls this turn: 3   loop limit reached: False
+Local ticket files in this conversation: ['outputs/fake_model/tickets/TKT-20261108-194117-0535.json']
+HELPDESK: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-194117-0535.json (service status: operational). Nothing has been sent.
+

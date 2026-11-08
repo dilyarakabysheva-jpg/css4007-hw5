@@ -1,0 +1,37 @@
+Scenario: S07 - The same request during a Wi-Fi outage
+Part: 2   graph_variant: default
+Status snapshot: wifi_outage
+Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
+Run at: 2026-11-08T19:41:19
+NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
+
+Storage folder (reset before scenario: True): local-storage/scenarios-fake
+--- Process 1 (pid 33876) ---
+Command: python run_scenarios.py --child S07 --segment 0 --fake-model
+
+user_id=demo-user-a  thread_id=s07  status_profile=wifi_outage
+USER: I enabled Wi-Fi and forgot the saved network, but Campus-Demo still will not connect. Check whether Wi-Fi is down. If it is operating, prepare a ticket about this problem.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: check_service_status({"service": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT check_service_status: {"service": "wifi", "status": "outage", "message": "The demo Wi-Fi service is unavailable across campus. The fixture gives no repair time.", "status_profile": "wifi_outage", "source": "data/service_status.json"}
+       reference_ids = []
+       tickets = []
+  4. agent
+       MODEL ANSWER: [FAKE MODEL] The demo status source reports an outage for wifi: The demo Wi-Fi service is unavailable across campus. The fixture gives no repair time. Your request said to prepare a ticket only if the service was operating, so I have not prepared that ticket. The data does not give a repair time.
+       model_calls = 2
+Information sources used: STATUS SNAPSHOT data/service_status.json profile=wifi_outage
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: [FAKE MODEL] The demo status source reports an outage for wifi: The demo Wi-Fi service is unavailable across campus. The fixture gives no repair time. Your request said to prepare a ticket only if the service was operating, so I have not prepared that ticket. The data does not give a repair time.
+

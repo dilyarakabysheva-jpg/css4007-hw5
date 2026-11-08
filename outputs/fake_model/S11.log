@@ -1,0 +1,70 @@
+Scenario: S11 - Persist and recall after restart
+Part: 3   graph_variant: default
+Status snapshot: normal
+Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
+Run at: 2026-11-08T19:41:28
+NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
+
+Storage folder (reset before scenario: True): local-storage/scenarios-fake
+--- Process 1 (pid 32732) ---
+Command: python run_scenarios.py --child S11 --segment 0 --fake-model
+
+user_id=demo-user-a  thread_id=restart-a  status_profile=normal
+USER: Please remember that I prefer replies in Kazakh. My issue is Wi-Fi. I enabled it and tried reconnecting, but it still fails.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved; saved new preference language=Kazakh
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = Kazakh
+       memory_note = read user memory for demo-user-a: nothing saved; saved new preference language=Kazakh
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: find_instructions({"topic": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT find_instructions: {"found": true, "topic": "wifi", "instruction_id": "GUIDE-WIFI", "title": "Connect to the practice campus network", "steps": ["Check that Wi-Fi is enabled and airplane mode is off.", "Select the fictional Campus-Demo network.", "If connection fails, forget the saved network and try connecting again.", "If the problem remains, check the service status before preparing a ticket."], "source": "data/helpdesk.json"}
+       reference_ids = ['GUIDE-WIFI']
+       tickets = []
+  4. agent
+       MODEL ANSWER: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can only write English) Here are the instructions from GUIDE-WIFI:
+  1. Check that Wi-Fi is enabled and airplane mode is off.
+  2. Select the fictional Campus-Demo network.
+  3. If connection fails, forget the saved network and try connecting again.
+  4. If the problem remains, check the service status before preparing a ticket.
+       model_calls = 2
+Information sources used: REFERENCE FILE data/helpdesk.json (find_instructions), USER MEMORY (language=Kazakh)
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can only write English) Here are the instructions from GUIDE-WIFI:
+  1. Check that Wi-Fi is enabled and airplane mode is off.
+  2. Select the fictional Campus-Demo network.
+  3. If connection fails, forget the saved network and try connecting again.
+  4. If the problem remains, check the service status before preparing a ticket.
+
+=== restart_process: the previous process exited; a NEW process opens the same storage ===
+--- Process 2 (pid 41840) ---
+Command: python run_scenarios.py --child S11 --segment 1 --fake-model
+
+user_id=demo-user-a  thread_id=restart-a  status_profile=normal
+USER: Which problem and steps did we discuss?
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 2 earlier messages
+    - HumanMessage: Please remember that I prefer replies in Kazakh. My issue is Wi-Fi. I enabled it and tried reconnecting, but it still fails.
+    - AIMessage: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can only write English) Here are the instructions from GUIDE-WIFI:   1. Check that Wi-Fi is enabl...
+Read from USER MEMORY: read user memory for demo-user-a: {'language': 'Kazakh'}
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = Kazakh
+       memory_note = read user memory for demo-user-a: {'language': 'Kazakh'}
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL ANSWER: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can only write English) In this conversation you reported a Wi-Fi problem and said you already tried: I enabled it; tried reconnecting.
+       model_calls = 1
+Information sources used: CONVERSATION MEMORY (SQLite checkpoint), USER MEMORY (language=Kazakh)
+Model calls this turn: 1   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can only write English) In this conversation you reported a Wi-Fi problem and said you already tried: I enabled it; tried reconnecting.
+

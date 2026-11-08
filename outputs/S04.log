@@ -1,0 +1,21 @@
+Scenario: S04 - Two topics before the graph change
+Part: 1   graph_variant: original
+Status snapshot: normal
+Model: none (Part 1 has no model)
+Run at: 2026-11-08T19:41:15
+
+Command: python part1.py "My Wi-Fi password does not work." --variant original
+user_id=demo-user-a  thread_id=s04
+graph_variant=original
+USER: My Wi-Fi password does not work.
+Route: START -> read_request -> wifi_help -> END
+State after each node:
+  1. read_request  update={'category': 'wifi'}
+       state = {'message': 'My Wi-Fi password does not work.', 'category': 'wifi'}
+  2. wifi_help  update={'reply': 'Connect to the practice campus network (GUIDE-WIFI):\n  1. Check that Wi-Fi is enabled and airplane mode is off.\n  2. Select the fictional Campus-Demo network.\n  3. If connection fails, forget the saved network and try connecting again.\n  4. If the problem remains, check the service status before preparing a ticket.'}
+       state = {'message': 'My Wi-Fi password does not work.', 'category': 'wifi', 'reply': 'Connect to the practice campus network (GUIDE-WIFI):\n  1. Check that Wi-Fi is enabled and airplane mode is off.\n  2. Select the fictional Campus-Demo network.\n  3. If connection fails, forget the saved network and try connecting again.\n  4. If the problem remains, check the service status before preparing a ticket.'}
+HELPDESK: Connect to the practice campus network (GUIDE-WIFI):
+  1. Check that Wi-Fi is enabled and airplane mode is off.
+  2. Select the fictional Campus-Demo network.
+  3. If connection fails, forget the saved network and try connecting again.
+  4. If the problem remains, check the service status before preparing a ticket.

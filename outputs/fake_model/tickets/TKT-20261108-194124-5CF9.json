@@ -1,0 +1,15 @@
+{
+  "ticket_id": "TKT-20261108-194124-5CF9",
+  "status": "draft",
+  "user_id": "demo-user-a",
+  "thread_id": "s09",
+  "category": "wifi",
+  "summary": "Wi-Fi problem: it still fails",
+  "steps_tried": [
+    "I enabled it",
+    "tried reconnecting"
+  ],
+  "service_status": "not checked",
+  "status_profile": "normal",
+  "reference_ids": []
+}

@@ -1,0 +1,17 @@
+Scenario: S03 - Unsupported request
+Part: 1   graph_variant: default
+Status snapshot: normal
+Model: none (Part 1 has no model)
+Run at: 2026-11-08T19:41:15
+
+Command: python part1.py "My laptop screen is broken." --variant original
+user_id=demo-user-a  thread_id=s03
+graph_variant=original
+USER: My laptop screen is broken.
+Route: START -> read_request -> other_help -> END
+State after each node:
+  1. read_request  update={'category': 'other'}
+       state = {'message': 'My laptop screen is broken.', 'category': 'other'}
+  2. other_help  update={'reply': 'I can only help with Wi-Fi or password problems. Does your problem concern Wi-Fi or a password?'}
+       state = {'message': 'My laptop screen is broken.', 'category': 'other', 'reply': 'I can only help with Wi-Fi or password problems. Does your problem concern Wi-Fi or a password?'}
+HELPDESK: I can only help with Wi-Fi or password problems. Does your problem concern Wi-Fi or a password?

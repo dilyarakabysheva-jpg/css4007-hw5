@@ -1,0 +1,17 @@
+Scenario: S05 - Two topics after adding clarification
+Part: 1   graph_variant: with_clarification
+Status snapshot: normal
+Model: none (Part 1 has no model)
+Run at: 2026-11-08T19:41:15
+
+Command: python part1.py "My Wi-Fi password does not work." --variant with_clarification
+user_id=demo-user-a  thread_id=s05
+graph_variant=with_clarification
+USER: My Wi-Fi password does not work.
+Route: START -> read_request -> clarify_problem -> END
+State after each node:
+  1. read_request  update={'category': 'both'}
+       state = {'message': 'My Wi-Fi password does not work.', 'category': 'both'}
+  2. clarify_problem  update={'reply': 'Your message mentions both Wi-Fi and a password. Is the problem connecting to Wi-Fi, or recovering your account password? Which one should we solve first?'}
+       state = {'message': 'My Wi-Fi password does not work.', 'category': 'both', 'reply': 'Your message mentions both Wi-Fi and a password. Is the problem connecting to Wi-Fi, or recovering your account password? Which one should we solve first?'}
+HELPDESK: Your message mentions both Wi-Fi and a password. Is the problem connecting to Wi-Fi, or recovering your account password? Which one should we solve first?
