@@ -1,5 +1,8 @@
 # HW5 — My LangGraph helpdesk
 
+**Student:** Dilyara Kabysheva · **GitHub:** [dilyarakabysheva](https://github.com/dilyarakabysheva) · Narxoz University · CSS-4007 Artificial Intelligence
+**Repository:** https://github.com/dilyarakabysheva/css4007-hw5
+
 > **Status of the evidence in this file**
 > - Part 1 (S01–S05): real runs of my code. No model is involved. Logs: `outputs/S01.log` … `outputs/S05.log`.
 > - Parts 2–3 (S06–S14, P3-D1): so far run only with the **scripted FAKE model** (`helpdesk/fake_model.py`), which is **not an LLM**. Logs: `outputs/fake_model/`. They show that the graph, the tools, the loop limit and memory work, but they do **not** show real model decisions.

@@ -1,5 +1,7 @@
 # HW5 — University IT helpdesk with LangGraph
 
+CSS-4007 Artificial Intelligence · Narxoz University · Dilyara Kabysheva ([dilyarakabysheva](https://github.com/dilyarakabysheva))
+
 This is a terminal helpdesk for a practice university IT service. It uses only fictional data from `data/`, and no real tickets are sent.
 The original assignment brief is in [ASSIGNMENT.md](ASSIGNMENT.md). My answers and results are in [SUBMISSION.md](SUBMISSION.md).
 
@@ -24,7 +26,16 @@ The original assignment brief is in [ASSIGNMENT.md](ASSIGNMENT.md). My answers a
 
 ## 1. Install
 
-Windows PowerShell:
+Get the code:
+
+```bash
+git clone https://github.com/dilyarakabysheva/css4007-hw5.git
+```
+```bash
+cd css4007-hw5
+```
+
+Then, in Windows PowerShell:
 
 ```bash
 python -m venv .venv
