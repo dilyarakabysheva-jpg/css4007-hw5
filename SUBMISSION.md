@@ -3,10 +3,17 @@
 **Student:** Dilyara Kabysheva · **GitHub:** [dilyarakabysheva-jpg](https://github.com/dilyarakabysheva-jpg) · Narxoz University · CSS-4007 Artificial Intelligence
 **Repository:** https://github.com/dilyarakabysheva-jpg/css4007-hw5
 
-> **Status of the evidence in this file**
-> - Part 1 (S01–S05): real runs of my code. No model is involved. Logs: `outputs/S01.log` … `outputs/S05.log`.
-> - Parts 2–3 (S06–S14, P3-D1): real runs with **OpenAI gpt-4o-mini** (API response: `gpt-4o-mini-2024-07-18`) on 8 November 2026. Logs: `outputs/S06.log` … `outputs/S14.log`, `outputs/P3-D1.log`; ticket drafts: `outputs/tickets/`.
-> - Separate offline runs with the **scripted FAKE model** (`helpdesk/fake_model.py`, **not an LLM**) are in `outputs/fake_model/`. They are only for checking the program without an API key and are not used as evidence of model behaviour.
+**Where the results come from**
+- S01–S05 (Part 1): no model, logs in `outputs/S01.log` … `S05.log`.
+- S06–S14 and P3-D1 (Parts 2–3): real runs with OpenAI **gpt-4o-mini** (`gpt-4o-mini-2024-07-18`) on 8 November 2026. Logs are in `outputs/`, ticket drafts in `outputs/tickets/`.
+- `outputs/fake_model/` holds offline runs with a scripted fake model (not an LLM). They are used only for tests, not as results.
+
+## Use of AI
+
+There are two different kinds of AI in this project:
+
+1. **gpt-4o-mini is part of the program.** In Parts 2–3 the assignment requires a model that decides which tools to call. All the results for S06–S14 come from this model.
+2. **Claude Code (Anthropic) was used during development.** It wrote most of the code, the tests and the documentation, ran the scenarios, and fixed the problems found in the first real run (see the end of this file). Commits made with Claude end with `Co-Authored-By: Claude`.
 
 ## Part 1 — How the graph works
 
@@ -245,7 +252,7 @@ Tests that run the graph use the **fake model**, so they test my program and not
 
 All rows are real runs. S01–S05 use the Part 1 graph (no model). S06–S14 use gpt-4o-mini, through `python run_scenarios.py --only <ID>`, which starts a new process for each `restart_process`. Fake-model versions of S06–S14 are only in `outputs/fake_model/`.
 
-| Scenario | Command or manual steps | Log file | What happened / what I changed |
+| Scenario | Command or manual steps | Log file | What happened |
 | --- | --- | --- | --- |
 | S01 — Simple Wi-Fi route | `python part1.py "I cannot connect to Wi-Fi."` | `outputs/S01.log` | read_request (category=wifi) → wifi_help; GUIDE-WIFI steps |
 | S02 — Case-insensitive password route | `python part1.py "I forgot my PASSWORD."` | `outputs/S02.log` | category=password → password_help; works because of `.lower()` |
@@ -262,13 +269,13 @@ All rows are real runs. S01–S05 use the Part 1 graph (no model). S06–S14 use
 | S13 — Do not share memory between users | `python run_scenarios.py --only S13` | `outputs/S13.log` | demo-user-b: nothing in user memory, 0 earlier messages; "Nothing has been recorded ..." |
 | S14 — Password recovery outage | `python run_scenarios.py --only S14` | `outputs/S14.log` | check_service_status("account_recovery") = outage under recovery_outage; no repair time invented (extra sentence about a ticket, see limitations) |
 
-**What I changed after the first real run.** The first gpt-4o-mini run (same day, logs overwritten by the final run) showed three problems:
-- In **S10** and **S11** the model created a ticket although the user never asked for one.
-- In **S11** its reply named a ticket file that does not exist (`wifi_issue_draft.txt`).
-- In **P3-D1** it answered "I cannot connect to Wi-Fi." with a question instead of the instructions, so the follow-up "I already tried that" could not be understood.
+**What changed after the first real run.** The first gpt-4o-mini run (same day; its logs were replaced by the final run) had three problems:
+- In **S10** and **S11** the model made a ticket although the user never asked for one.
+- In **S11** the reply named a ticket file that does not exist (`wifi_issue_draft.txt`).
+- In **P3-D1** the model answered "I cannot connect to Wi-Fi." with a question instead of the instructions, so "I already tried that" could not be understood.
 
-I fixed this in two ways:
-1. I made the system prompt stricter: share instructions for a reported problem, prepare a ticket only when asked, and copy the file name exactly from the tool result.
-2. I added a check in my `tools` node: `prepare_ticket` is refused when no user message mentions a ticket. Test: `test_no_ticket_unless_user_asked`.
+Two fixes were made:
+1. The system prompt became stricter: give instructions for a reported problem, prepare a ticket only when asked, and copy the file name exactly from the tool result.
+2. The `tools` node now refuses `prepare_ticket` if no user message mentions a ticket. Test: `test_no_ticket_unless_user_asked`.
 
-Then I re-ran all model scenarios (S06–S14, P3-D1), because the system prompt is shared by all of them. The table above shows that final run.
+After that, all model scenarios (S06–S14, P3-D1) were run again, because they all use the same system prompt. The table above shows this final run.
