@@ -64,6 +64,27 @@ class AlwaysWantsToolsModel:
                                                   "id": f"call_{len(messages)}", "type": "tool_call"}])
 
 
+class EagerTicketModel:
+    """Fake model that tries to create a ticket nobody asked for, then answers."""
+    def bind_tools(self, schemas):
+        return self
+
+    def invoke(self, messages):
+        if any(getattr(m, "tool_call_id", None) for m in messages):
+            return AIMessage(content="done")
+        return AIMessage(content="", tool_calls=[{"name": "prepare_ticket", "id": "call_1", "type": "tool_call",
+                                                  "args": {"category": "wifi", "summary": "Wi-Fi fails",
+                                                           "steps_tried": ["enabled Wi-Fi"]}}])
+
+
+def test_no_ticket_unless_user_asked(tmp_path):
+    session = new_session(tmp_path, EagerTicketModel())
+    trace = session.send("demo-user-a", "t1", "normal", "I cannot connect to Wi-Fi. I enabled it.")
+    session.close()
+    assert trace["tickets"] == []
+    assert not (tmp_path / "tickets").exists()
+
+
 def test_loop_limit_stops_the_graph(tmp_path):
     session = new_session(tmp_path, AlwaysWantsToolsModel())
     trace = session.send("demo-user-a", "t1", "normal", "wifi")

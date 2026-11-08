@@ -39,6 +39,11 @@ class HelpdeskState(TypedDict, total=False):
     tickets: list            # local ticket files created in this conversation
 
 
+def user_asked_for_ticket(messages):
+    """True if any user message in this conversation mentions a ticket."""
+    return any(isinstance(m, HumanMessage) and "ticket" in m.content.lower() for m in messages)
+
+
 def build_system_prompt(state):
     language = state.get("user_language")
     if language:
@@ -50,7 +55,10 @@ def build_system_prompt(state):
 You can help with: {scope}.
 
 Rules:
-- Use find_instructions to get Wi-Fi or password instructions. Never invent instructions.
+- When the user reports a Wi-Fi or password problem, call find_instructions and share the steps
+  (mention which ones the user says they already tried). Never invent instructions.
+- Prepare a ticket ONLY when the user asks for a ticket (or says yes to your offer of one).
+  Never create a ticket on your own initiative.
 - Use check_service_status when the user asks whether a service is down or has a known problem.
   Wi-Fi -> service "wifi". Password / account recovery -> service "account_recovery".
 - Status "unknown" means the status could not be determined. It is NOT operational and NOT an outage.
@@ -61,7 +69,9 @@ Rules:
 - prepare_ticket needs a problem description and the steps already tried, taken from the user's own words
   in this conversation. If either is missing, ask "What problem are you having, and what have you already tried?"
   Never add steps the user did not mention.
-- Tickets are LOCAL DRAFTS only. Never say a ticket was sent. Tell the user the local file name.
+- Tickets are LOCAL DRAFTS only. Never say a ticket was sent. Tell the user the local file name,
+  copied exactly from the "file" field of the prepare_ticket result. Never make up file names.
+- If prepare_ticket returns created=false, do not claim that a ticket exists.
 - Never invent repair times and never claim a real university outage.
 - Never ask for or store passwords, recovery codes or API keys.
 - Use the earlier messages of this conversation to understand references such as "that" or "we discussed".
@@ -117,6 +127,11 @@ def build_helpdesk_graph(model, user_memory, checkpointer=None, ticket_dir=None,
                 elif name == "check_service_status":
                     result = tools.check_service_status(args.get("service"), state["status_profile"])
                     service_checks[result["service"]] = result
+                elif name == "prepare_ticket" and not user_asked_for_ticket(state["messages"]):
+                    # Safety check in OUR code: the model may not create a ticket nobody asked for.
+                    result = {"created": False, "missing": [],
+                              "message": "The user has not asked for a ticket in this conversation. "
+                                         "Do not prepare one unless they ask."}
                 elif name == "prepare_ticket":
                     category = tools.normalize_topic(args.get("category")) or args.get("category")
                     service = tools.HELPDESK["topic_services"].get(category)
