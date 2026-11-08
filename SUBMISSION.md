@@ -1,7 +1,7 @@
 # HW5 — My LangGraph helpdesk
 
-**Student:** Dilyara Kabysheva · **GitHub:** [dilyarakabysheva](https://github.com/dilyarakabysheva) · Narxoz University · CSS-4007 Artificial Intelligence
-**Repository:** https://github.com/dilyarakabysheva/css4007-hw5
+**Student:** Dilyara Kabysheva · **GitHub:** [dilyarakabysheva-jpg](https://github.com/dilyarakabysheva-jpg) · Narxoz University · CSS-4007 Artificial Intelligence
+**Repository:** https://github.com/dilyarakabysheva-jpg/css4007-hw5
 
 > **Status of the evidence in this file**
 > - Part 1 (S01–S05): real runs of my code. No model is involved. Logs: `outputs/S01.log` … `outputs/S05.log`.
