@@ -2,11 +2,11 @@ Scenario: S08 - Status source unavailable
 Part: 2   graph_variant: default
 Status snapshot: status_unavailable
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:22
+Run at: 2026-11-08T20:36:08
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 41096) ---
+--- Process 1 (pid 33236) ---
 Command: python run_scenarios.py --child S08 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=s08  status_profile=status_unavailable

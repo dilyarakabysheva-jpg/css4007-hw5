@@ -2,11 +2,11 @@ Scenario: S12 - Preference across threads without replay
 Part: 3   graph_variant: default
 Status snapshot: normal
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:32
+Run at: 2026-11-08T20:36:19
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 33428) ---
+--- Process 1 (pid 48408) ---
 Command: python run_scenarios.py --child S12 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=preference-a1  status_profile=normal
@@ -44,7 +44,7 @@ HELPDESK: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can onl
   4. If the problem remains, check the service status before preparing a ticket.
 
 === restart_process: the previous process exited; a NEW process opens the same storage ===
---- Process 2 (pid 14872) ---
+--- Process 2 (pid 47628) ---
 Command: python run_scenarios.py --child S12 --segment 1 --fake-model
 
 user_id=demo-user-a  thread_id=preference-a2  status_profile=normal

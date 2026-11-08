@@ -2,11 +2,11 @@ Scenario: S14 - Password recovery outage
 Part: 2   graph_variant: default
 Status snapshot: recovery_outage
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:39
+Run at: 2026-11-08T20:36:25
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 34520) ---
+--- Process 1 (pid 27556) ---
 Command: python run_scenarios.py --child S14 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=s14  status_profile=recovery_outage

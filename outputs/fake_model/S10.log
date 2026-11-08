@@ -2,11 +2,11 @@ Scenario: S10 - Use the current conversation
 Part: 3   graph_variant: default
 Status snapshot: normal
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:26
+Run at: 2026-11-08T20:36:13
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 49008) ---
+--- Process 1 (pid 49968) ---
 Command: python run_scenarios.py --child S10 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=s10  status_profile=normal

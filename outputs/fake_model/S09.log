@@ -2,11 +2,11 @@ Scenario: S09 - Missing ticket details
 Part: 2   graph_variant: default
 Status snapshot: normal
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:24
+Run at: 2026-11-08T20:36:10
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 46412) ---
+--- Process 1 (pid 39044) ---
 Command: python run_scenarios.py --child S09 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=s09  status_profile=normal
@@ -45,14 +45,14 @@ Nodes visited and state updates:
        MODEL REQUESTS TOOLS: prepare_ticket({"category": "wifi", "summary": "Wi-Fi problem: it still fails", "steps_tried": ["I enabled it", "tried reconnecting"]})
        model_calls = 1
   3. tools
-       TOOL RESULT prepare_ticket: {"created": true, "ticket_id": "TKT-20261108-194124-5CF9", "file": "outputs/fake_model/tickets/TKT-20261108-194124-5CF9.json", "ticket": {"ticket_id": "TKT-20261108-194124-5CF9", "status": "draft", "user_id": "demo-user-a", "thread_id": "s09", "category": "wifi", "summary": "Wi-Fi problem: it still fails", "steps_tried": ["I enabled it", "tried reconnecting"], "service_status": "not checked", "status_profile": "normal", "reference_ids": []}, "message": "Local draft saved. Nothing was sent to a real helpdesk."}
+       TOOL RESULT prepare_ticket: {"created": true, "ticket_id": "TKT-20261108-203610-2AEB", "file": "outputs/fake_model/tickets/TKT-20261108-203610-2AEB.json", "ticket": {"ticket_id": "TKT-20261108-203610-2AEB", "status": "draft", "user_id": "demo-user-a", "thread_id": "s09", "category": "wifi", "summary": "Wi-Fi problem: it still fails", "steps_tried": ["I enabled it", "tried reconnecting"], "service_status": "not checked", "status_profile": "normal", "reference_ids": []}, "message": "Local draft saved. Nothing was sent to a real helpdesk."}
        reference_ids = []
-       tickets = ['outputs/fake_model/tickets/TKT-20261108-194124-5CF9.json']
+       tickets = ['outputs/fake_model/tickets/TKT-20261108-203610-2AEB.json']
   4. agent
-       MODEL ANSWER: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-194124-5CF9.json (service status: not checked). Nothing has been sent.
+       MODEL ANSWER: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-203610-2AEB.json (service status: not checked). Nothing has been sent.
        model_calls = 2
 Information sources used: CONVERSATION MEMORY (SQLite checkpoint)
 Model calls this turn: 2   loop limit reached: False
-Local ticket files in this conversation: ['outputs/fake_model/tickets/TKT-20261108-194124-5CF9.json']
-HELPDESK: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-194124-5CF9.json (service status: not checked). Nothing has been sent.
+Local ticket files in this conversation: ['outputs/fake_model/tickets/TKT-20261108-203610-2AEB.json']
+HELPDESK: [FAKE MODEL] I prepared a local ticket draft: outputs/fake_model/tickets/TKT-20261108-203610-2AEB.json (service status: not checked). Nothing has been sent.
 

@@ -2,11 +2,11 @@ Scenario: S11 - Persist and recall after restart
 Part: 3   graph_variant: default
 Status snapshot: normal
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:28
+Run at: 2026-11-08T20:36:15
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 32732) ---
+--- Process 1 (pid 28268) ---
 Command: python run_scenarios.py --child S11 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=restart-a  status_profile=normal
@@ -44,7 +44,7 @@ HELPDESK: [FAKE MODEL] (user memory says reply in Kazakh; the fake model can onl
   4. If the problem remains, check the service status before preparing a ticket.
 
 === restart_process: the previous process exited; a NEW process opens the same storage ===
---- Process 2 (pid 41840) ---
+--- Process 2 (pid 9828) ---
 Command: python run_scenarios.py --child S11 --segment 1 --fake-model
 
 user_id=demo-user-a  thread_id=restart-a  status_profile=normal

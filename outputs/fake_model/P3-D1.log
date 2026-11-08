@@ -2,11 +2,11 @@ Scenario: P3-D1 - Refer to an earlier message ('I already tried that')
 Part: 3   graph_variant: default
 Status snapshot: normal
 Model: FAKE MODEL - fake-helpdesk-model (scripted rules, not an LLM)
-Run at: 2026-11-08T19:41:41
+Run at: 2026-11-08T20:36:27
 NOTE: this log was produced by the scripted FAKE model. It is NOT a real LLM run.
 
 Storage folder (reset before scenario: True): local-storage/scenarios-fake
---- Process 1 (pid 20856) ---
+--- Process 1 (pid 30748) ---
 Command: python run_scenarios.py --child P3-D1 --segment 0 --fake-model
 
 user_id=demo-user-a  thread_id=tried-that  status_profile=normal

@@ -1,13 +1,13 @@
 {
-  "ticket_id": "TKT-20261108-194124-5CF9",
+  "ticket_id": "TKT-20261108-203322-6C93",
   "status": "draft",
   "user_id": "demo-user-a",
   "thread_id": "s09",
   "category": "wifi",
-  "summary": "Wi-Fi problem: it still fails",
+  "summary": "Wi-Fi issue",
   "steps_tried": [
-    "I enabled it",
-    "tried reconnecting"
+    "Enabled Wi-Fi",
+    "Tried reconnecting"
   ],
   "service_status": "not checked",
   "status_profile": "normal",

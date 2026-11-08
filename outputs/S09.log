@@ -1,0 +1,61 @@
+Scenario: S09 - Missing ticket details
+Part: 2   graph_variant: default
+Status snapshot: normal
+Model: REAL MODEL - OpenAI gpt-4o-mini
+Run at: 2026-11-08T20:33:24
+
+Storage folder (reset before scenario: True): local-storage/scenarios
+--- Process 1 (pid 38808) ---
+Command: python run_scenarios.py --child S09 --segment 0
+
+user_id=demo-user-a  thread_id=s09  status_profile=normal
+USER: Prepare a support ticket.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL ANSWER: What problem are you having, and what have you already tried?
+       model_calls = 1
+Information sources used: none
+Model calls this turn: 1   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: What problem are you having, and what have you already tried?
+
+user_id=demo-user-a  thread_id=s09  status_profile=normal
+USER: The issue is Wi-Fi. I enabled it and tried reconnecting, but it still fails.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 2 earlier messages
+    - HumanMessage: Prepare a support ticket.
+    - AIMessage: What problem are you having, and what have you already tried?
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: prepare_ticket({"category": "wifi", "summary": "Wi-Fi issue", "steps_tried": ["Enabled Wi-Fi", "Tried reconnecting"]})
+       model_calls = 1
+  3. tools
+       TOOL RESULT prepare_ticket: {"created": true, "ticket_id": "TKT-20261108-203322-6C93", "file": "outputs/tickets/TKT-20261108-203322-6C93.json", "ticket": {"ticket_id": "TKT-20261108-203322-6C93", "status": "draft", "user_id": "demo-user-a", "thread_id": "s09", "category": "wifi", "summary": "Wi-Fi issue", "steps_tried": ["Enabled Wi-Fi", "Tried reconnecting"], "service_status": "not checked", "status_profile": "normal", "reference_ids": []}, "message": "Local draft saved. Nothing was sent to a real helpdesk."}
+       reference_ids = []
+       tickets = ['outputs/tickets/TKT-20261108-203322-6C93.json']
+  4. agent
+       MODEL ANSWER: I have prepared a local support ticket for your Wi-Fi issue. The file is saved as: **outputs/tickets/TKT-20261108-203322-6C93.json**. 
+
+Please let me know if you need further assistance!
+       model_calls = 2
+Information sources used: CONVERSATION MEMORY (SQLite checkpoint)
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: ['outputs/tickets/TKT-20261108-203322-6C93.json']
+HELPDESK: I have prepared a local support ticket for your Wi-Fi issue. The file is saved as: **outputs/tickets/TKT-20261108-203322-6C93.json**. 
+
+Please let me know if you need further assistance!
+

@@ -5,8 +5,8 @@
 
 > **Status of the evidence in this file**
 > - Part 1 (S01–S05): real runs of my code. No model is involved. Logs: `outputs/S01.log` … `outputs/S05.log`.
-> - Parts 2–3 (S06–S14, P3-D1): so far run only with the **scripted FAKE model** (`helpdesk/fake_model.py`), which is **not an LLM**. Logs: `outputs/fake_model/`. They show that the graph, the tools, the loop limit and memory work, but they do **not** show real model decisions.
-> - **TODO before submitting:** put an OpenAI key in `.env` and run `python run_scenarios.py`. This writes the real-model logs to `outputs/S06.log` … `outputs/S14.log`. Then fill the "real model" columns below.
+> - Parts 2–3 (S06–S14, P3-D1): real runs with **OpenAI gpt-4o-mini** (API response: `gpt-4o-mini-2024-07-18`) on 8 November 2026. Logs: `outputs/S06.log` … `outputs/S14.log`, `outputs/P3-D1.log`; ticket drafts: `outputs/tickets/`.
+> - Separate offline runs with the **scripted FAKE model** (`helpdesk/fake_model.py`, **not an LLM**) are in `outputs/fake_model/`. They are only for checking the program without an API key and are not used as evidence of model behaviour.
 
 ## Part 1 — How the graph works
 
@@ -143,7 +143,7 @@ graph TD;
 ### Model and provider
 
 - Real model: **OpenAI** through `langchain-openai` (`ChatOpenAI`, `temperature=0`). The model name comes from `MODEL_NAME` in `.env`.
-  **TODO:** write the exact model used for the real run here: `____________`.
+  Model used for the real runs: `MODEL_NAME=gpt-4o-mini`; the API reported the version `gpt-4o-mini-2024-07-18`.
 - Tests and offline runs: **FAKE MODEL** `fake-helpdesk-model (scripted rules, not an LLM)`. Every reply starts with `[FAKE MODEL]`.
 
 ### Direct tool calls (no model, no graph)
@@ -161,27 +161,32 @@ prepare_ticket("wifi", "", [], ...)     # -> {"created": False, "missing": ["pro
 
 ### A run that uses several tools (S06, second message)
 
-From `outputs/fake_model/S06.log`. **This is the FAKE model, not a real LLM.**
+Real run with gpt-4o-mini, from `outputs/S06.log` (shortened):
 
 ```text
+1. load_user_memory   read user memory for demo-user-a: nothing saved
 2. agent  MODEL REQUESTS TOOLS: check_service_status({"service": "wifi"})
-3. tools  TOOL RESULT check_service_status: {"service": "wifi", "status": "operational", ...}
-4. agent  MODEL REQUESTS TOOLS: prepare_ticket({"category": "wifi", "summary": "Wi-Fi problem: Campus-Demo still will not connect",
-                                                "steps_tried": ["I enabled Wi-Fi", "forgot the saved network"]})
-5. tools  TOOL RESULT prepare_ticket: {"created": true, "file": "outputs/fake_model/tickets/TKT-....json", "service_status": "operational", ...}
-6. agent  MODEL ANSWER: I prepared a local ticket draft ... Nothing has been sent.
+3. tools  TOOL RESULT check_service_status: {"service": "wifi", "status": "operational",
+          "message": "The demo Wi-Fi service has no reported outage.", "status_profile": "normal", ...}
+4. agent  MODEL REQUESTS TOOLS: prepare_ticket({"category": "wifi", "summary": "Unable to connect to Campus-Demo network.",
+                                                "steps_tried": ["Enabled Wi-Fi and forgot the saved network."]})
+5. tools  TOOL RESULT prepare_ticket: {"created": true, "file": "outputs/tickets/TKT-20261108-203300-DC91.json", ...}
+6. agent  MODEL ANSWER: The Wi-Fi service is operational, so I have prepared a ticket for you ...
+          The ticket has been saved as outputs/tickets/TKT-20261108-203300-DC91.json.
 ```
 
-The first message of S06 used `find_instructions` (GUIDE-WIFI), so the ticket's `reference_ids` contains `GUIDE-WIFI`.
-**TODO:** after the real run, paste the matching part of `outputs/S06.log` here.
+The model requested `prepare_ticket` only **after** it saw the `operational` result. The ticket uses only the user's own steps.
+The first message of S06 used `find_instructions` (GUIDE-WIFI), so the saved ticket has `reference_ids: ["GUIDE-WIFI"]` and `service_status: "operational"`. My code fills `service_status`, not the model.
 
 ### Same request, three snapshots (S06 / S07 / S08)
 
-| Snapshot | `check_service_status` result | Next step chosen | Fake-model log | Real-model log |
-| --- | --- | --- | --- | --- |
-| `normal` | operational | `prepare_ticket` → local draft | `outputs/fake_model/S06.log` | TODO `outputs/S06.log` |
-| `wifi_outage` | outage | no ticket; explains the condition was not met; no repair time | `outputs/fake_model/S07.log` | TODO `outputs/S07.log` |
-| `status_unavailable` | unknown | no ticket; asks whether to draft one saying status could not be checked | `outputs/fake_model/S08.log` | TODO `outputs/S08.log` |
+Real runs with gpt-4o-mini:
+
+| Snapshot | `check_service_status` result | What the model did next | Log |
+| --- | --- | --- | --- |
+| `normal` | operational | called `prepare_ticket`; draft `outputs/tickets/TKT-20261108-203300-DC91.json` | `outputs/S06.log` |
+| `wifi_outage` | outage | no ticket: "there is currently an outage with the Wi-Fi service across campus, so I cannot prepare a ticket for you", and said no repair time is given | `outputs/S07.log` |
+| `status_unavailable` | unknown | no ticket: "Would you like me to prepare a draft ticket explaining that the status could not be checked?" | `outputs/S08.log` |
 
 The request text is the same, and only the snapshot passed with `--profile` changes. Because the tool result changes, the next step changes too.
 
@@ -200,12 +205,14 @@ The request text is the same, and only the snapshot passed with `--profile` chan
 
 | Situation | Command used | Log file | What happened |
 | --- | --- | --- | --- |
-| Refer to an earlier message | `python run_scenarios.py --fake-model --only P3-D1` | `outputs/fake_model/P3-D1.log` (FAKE) | Turn 1 returned GUIDE-WIFI. For "I already tried that", 2 earlier messages were read from the checkpoint, and the answer explains that "that" means the GUIDE-WIFI instructions. |
-| Close, restart and resume | `python run_scenarios.py --fake-model --only S11` (process 1, then process 2) | `outputs/fake_model/S11.log` (FAKE) | Process 2 had a different pid and read 2 earlier messages from the checkpoint. The reply named the Wi-Fi problem and the steps "I enabled it; tried reconnecting". |
-| Same user, new conversation | `python run_scenarios.py --fake-model --only S12` | `outputs/fake_model/S12.log` (FAKE) | Thread `preference-a2` had 0 earlier messages, but user memory returned `{'language': 'Kazakh'}`. |
-| Different user | `python run_scenarios.py --fake-model --only S13` | `outputs/fake_model/S13.log` (FAKE) | For demo-user-b: `read user memory for demo-user-b: nothing saved` and 0 earlier messages. The reply says nothing was recorded. |
+All four are real runs with gpt-4o-mini:
 
-**TODO:** repeat these with the real model (`python run_scenarios.py --only P3-D1 S11 S12 S13`). The real model should actually reply in Kazakh. The fake model only notes the preference because it can only write English.
+| Situation | Command used | Log file | What happened |
+| --- | --- | --- | --- |
+| Refer to an earlier message | `python run_scenarios.py --only P3-D1` | `outputs/P3-D1.log` | Turn 1: `find_instructions` → GUIDE-WIFI steps (from the reference file). Turn 2, "I already tried that": 2 earlier messages were read from the checkpoint. The model treated "that" as the steps it had just given, so it did not repeat them. It called `check_service_status` (operational) and offered a ticket. |
+| Close, restart and resume | `python run_scenarios.py --only S11` (process 1, then process 2) | `outputs/S11.log` | Process 1 saved `language=Kazakh` to user memory. Process 2 had a different pid and read 2 earlier messages from the SQLite checkpoint. It answered in Kazakh that we discussed a Wi-Fi problem, and that enabling Wi-Fi and reconnecting did not help. |
+| Same user, new conversation | `python run_scenarios.py --only S12` (2 processes) | `outputs/S12.log` | Thread `preference-a2` read 0 earlier messages, but user memory returned `{'language': 'Kazakh'}`. The model answered in Kazakh that the user asked for Kazakh, and listed what it can help with. |
+| Different user | `python run_scenarios.py --only S13` | `outputs/S13.log` | demo-user-b: `read user memory for demo-user-b: nothing saved`, 0 earlier messages. Reply in English: "Nothing has been recorded regarding a preferred language or a previous problem." |
 
 ## Part 4 — Running and checking my work
 
@@ -219,7 +226,7 @@ The request text is the same, and only the snapshot passed with `--profile` chan
 | `test_part1_routing.py` | a wrong rule order, case-sensitive matching, a missing `wi-fi` alias, `clarify_problem` not wired, the original message being overwritten |
 | `test_tools.py` | wrong instruction ids, the wrong snapshot or the password→account_recovery mapping broken, tickets missing template fields, tickets created without details or with secrets |
 | `test_user_memory.py` | a question about language mistaken for a new preference, preferences mixed between users, a preference not saved to disk |
-| `test_agent_and_memory.py` | the tool loop not running tools, a ticket made during an outage or unknown status, the loop never stopping, conversation not restored after reopening storage or after a real process restart, a new thread seeing old messages, one user seeing another user's preference |
+| `test_agent_and_memory.py` | the tool loop not running tools, a ticket made during an outage or unknown status, a ticket the user never asked for, the loop never stopping, conversation not restored after reopening storage or after a real process restart, a new thread seeing old messages, one user seeing another user's preference |
 
 Tests that run the graph use the **fake model**, so they test my program and not the intelligence of an LLM. The real-model demonstration is kept separate (`python run_scenarios.py` without `--fake-model`).
 
@@ -229,11 +236,14 @@ Tests that run the graph use the **fake model**, so they test my program and not
 - **Preference detection** uses a regular expression (`prefer replies in X`, `reply in X`) with a list of known languages. Unusual wording like "talk to me in Kazakh" would be missed. A model could extract it instead, but then the model would be writing user memory.
 - **Tool execution** is my own `run_tools` node instead of LangGraph's prebuilt `ToolNode`. This keeps "who executes the tool" visible and lets my program add `status_profile` and the checked service status.
 - **Fake model** follows keyword rules. It is only for tests and offline demos and is not a replacement for the real LLM run.
-- **Real LLM:** results depend on the model. A weaker model might call `prepare_ticket` before checking the status. The system prompt states the conditional rules, and the ticket's `service_status` is always filled by my code, never by the model.
+- **Real LLM:** results depend on the model and are not fully deterministic, even at `temperature=0`. The system prompt states the rules, and two things are enforced in my code: the ticket's `service_status` is filled by the program, and `prepare_ticket` is refused if the user never mentioned a ticket.
+- **Known imperfections in the final real run:**
+  - In S14 the model added "I cannot prepare a ticket for this issue since it's not operational" although no ticket was requested. The status answer itself is correct (outage, no repair time invented).
+  - In S09 the ticket summary is short ("Wi-Fi issue"), but it does not invent anything.
 
 ## Supplied scenarios — my actual results
 
-Part 1 rows are real runs. Rows for S06–S14 are currently **fake-model runs** (`outputs/fake_model/`), and the real-model logs are still TODO.
+All rows are real runs. S01–S05 use the Part 1 graph (no model). S06–S14 use gpt-4o-mini, through `python run_scenarios.py --only <ID>`, which starts a new process for each `restart_process`. Fake-model versions of S06–S14 are only in `outputs/fake_model/`.
 
 | Scenario | Command or manual steps | Log file | What happened / what I changed |
 | --- | --- | --- | --- |
@@ -242,14 +252,23 @@ Part 1 rows are real runs. Rows for S06–S14 are currently **fake-model runs** 
 | S03 — Unsupported request | `python part1.py "My laptop screen is broken."` | `outputs/S03.log` | category=other → other_help asks "Wi-Fi or a password?" |
 | S04 — Two topics before the graph change | `python part1.py "My Wi-Fi password does not work." --variant original` | `outputs/S04.log` | category=wifi → wifi_help; the wifi rule is first, so the password part is lost |
 | S05 — Two topics after adding clarification | `python part1.py "My Wi-Fi password does not work." --variant with_clarification` | `outputs/S05.log` | category=both → new node clarify_problem asks which problem first |
-| S06 — Instructions then local ticket | `python run_scenarios.py --only S06` | fake: `outputs/fake_model/S06.log`; real: TODO | Turn 1: find_instructions → GUIDE-WIFI. Turn 2: check_service_status=operational → prepare_ticket with the user's steps; local file named in the reply |
-| S07 — The same request during a Wi-Fi outage | `python run_scenarios.py --only S07` | fake: `outputs/fake_model/S07.log`; real: TODO | status=outage → no ticket; says the condition was not met and there is no repair time |
-| S08 — Status source unavailable | `python run_scenarios.py --only S08` | fake: `outputs/fake_model/S08.log`; real: TODO | status=unknown → no ticket; asks whether to draft one explaining the status could not be checked |
-| S09 — Missing ticket details | `python run_scenarios.py --only S09` | fake: `outputs/fake_model/S09.log`; real: TODO | Turn 1: asks for the problem and the steps tried (no tool). Turn 2: prepare_ticket with service_status "not checked" |
-| S10 — Use the current conversation | `python run_scenarios.py --only S10` | fake: `outputs/fake_model/S10.log`; real: TODO | Turn 2 read 2 earlier messages from the checkpoint and listed the steps already tried |
-| S11 — Persist and recall after restart | `python run_scenarios.py --only S11` (2 processes) | fake: `outputs/fake_model/S11.log`; real: TODO | New pid after restart; problem and steps recalled from the SQLite checkpoint |
-| S12 — Preference across threads without replay | `python run_scenarios.py --only S12` (2 processes) | fake: `outputs/fake_model/S12.log`; real: TODO | New thread: 0 earlier messages; language Kazakh from user memory |
-| S13 — Do not share memory between users | `python run_scenarios.py --only S13` | fake: `outputs/fake_model/S13.log`; real: TODO | demo-user-b: nothing in user memory, 0 earlier messages; reply says nothing recorded |
-| S14 — Password recovery outage | `python run_scenarios.py --only S14` | fake: `outputs/fake_model/S14.log`; real: TODO | check_service_status("account_recovery") = outage under recovery_outage; no repair time invented |
+| S06 — Instructions then local ticket | `python run_scenarios.py --only S06` | `outputs/S06.log` | Turn 1: find_instructions → GUIDE-WIFI. Turn 2: check_service_status = operational → prepare_ticket with the user's own steps; reply names `outputs/tickets/TKT-20261108-203300-DC91.json` |
+| S07 — The same request during a Wi-Fi outage | `python run_scenarios.py --only S07` | `outputs/S07.log` | check_service_status = outage → no ticket; says it cannot prepare the ticket because of the outage and that no repair time is given |
+| S08 — Status source unavailable | `python run_scenarios.py --only S08` | `outputs/S08.log` | check_service_status = unknown → no ticket; asks whether to prepare a draft explaining that the status could not be checked |
+| S09 — Missing ticket details | `python run_scenarios.py --only S09` | `outputs/S09.log` | Turn 1: no tool, asks "What problem are you having, and what have you already tried?". Turn 2: prepare_ticket with steps ["Enabled Wi-Fi", "Tried reconnecting"]; ticket service_status "not checked" |
+| S10 — Use the current conversation | `python run_scenarios.py --only S10` | `outputs/S10.log` | Turn 1: find_instructions. Turn 2: 2 earlier messages from the checkpoint; listed "enabled Wi-Fi and forgot the saved network" as already tried |
+| S11 — Persist and recall after restart | `python run_scenarios.py --only S11` (2 processes) | `outputs/S11.log` | Different pid after restart; problem and steps recalled from the SQLite checkpoint; reply in Kazakh from user memory |
+| S12 — Preference across threads without replay | `python run_scenarios.py --only S12` (2 processes) | `outputs/S12.log` | New thread: 0 earlier messages; Kazakh from user memory; answered in Kazakh |
+| S13 — Do not share memory between users | `python run_scenarios.py --only S13` | `outputs/S13.log` | demo-user-b: nothing in user memory, 0 earlier messages; "Nothing has been recorded ..." |
+| S14 — Password recovery outage | `python run_scenarios.py --only S14` | `outputs/S14.log` | check_service_status("account_recovery") = outage under recovery_outage; no repair time invented (extra sentence about a ticket, see limitations) |
 
-What I would change if a behaviour was wrong. If the real model makes a ticket before checking the status (S06/S07), I would make the rule in the system prompt stricter, or add a graph check that blocks `prepare_ticket` while a conditional status check is still missing. If the preference is not detected, I would extend the patterns in `user_memory.py`.
+**What I changed after the first real run.** The first gpt-4o-mini run (same day, logs overwritten by the final run) showed three problems:
+- In **S10** and **S11** the model created a ticket although the user never asked for one.
+- In **S11** its reply named a ticket file that does not exist (`wifi_issue_draft.txt`).
+- In **P3-D1** it answered "I cannot connect to Wi-Fi." with a question instead of the instructions, so the follow-up "I already tried that" could not be understood.
+
+I fixed this in two ways:
+1. I made the system prompt stricter: share instructions for a reported problem, prepare a ticket only when asked, and copy the file name exactly from the tool result.
+2. I added a check in my `tools` node: `prepare_ticket` is refused when no user message mentions a ticket. Test: `test_no_ticket_unless_user_asked`.
+
+Then I re-ran all model scenarios (S06–S14, P3-D1), because the system prompt is shared by all of them. The table above shows that final run.

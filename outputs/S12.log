@@ -1,0 +1,73 @@
+Scenario: S12 - Preference across threads without replay
+Part: 3   graph_variant: default
+Status snapshot: normal
+Model: REAL MODEL - OpenAI gpt-4o-mini
+Run at: 2026-11-08T20:33:52
+
+Storage folder (reset before scenario: True): local-storage/scenarios
+--- Process 1 (pid 26636) ---
+Command: python run_scenarios.py --child S12 --segment 0
+
+user_id=demo-user-a  thread_id=preference-a1  status_profile=normal
+USER: Please remember that I prefer replies in Kazakh. I have a Wi-Fi problem.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved; saved new preference language=Kazakh
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = Kazakh
+       memory_note = read user memory for demo-user-a: nothing saved; saved new preference language=Kazakh
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: find_instructions({"topic": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT find_instructions: {"found": true, "topic": "wifi", "instruction_id": "GUIDE-WIFI", "title": "Connect to the practice campus network", "steps": ["Check that Wi-Fi is enabled and airplane mode is off.", "Select the fictional Campus-Demo network.", "If connection fails, forget the saved network and try connecting again.", "If the problem remains, check the service status before preparing a ticket."], "source": "data/helpdesk.json"}
+       reference_ids = ['GUIDE-WIFI']
+       tickets = []
+  4. agent
+       MODEL ANSWER: Сіз Wi-Fi мәселесін айтып отырсыз. Мына қадамдарды орындап көріңіз:
+
+1. Wi-Fi қосулы екеніне және ұшақ режимі өшірілгеніне көз жеткізіңіз.
+2. "Campus-Demo" желісін таңдаңыз.
+3. Егер қосылу сәтсіз болса, сақталған желіні ұмытуды және қайта қосылуды байқап көріңіз.
+4. Егер мәселе шешілмесе, билет дайындамас бұрын қызметтің статусын тексеріңіз.
+
+Сіз қандай қадамдарды орындадыңыз?
+       model_calls = 2
+Information sources used: REFERENCE FILE data/helpdesk.json (find_instructions), USER MEMORY (language=Kazakh)
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: Сіз Wi-Fi мәселесін айтып отырсыз. Мына қадамдарды орындап көріңіз:
+
+1. Wi-Fi қосулы екеніне және ұшақ режимі өшірілгеніне көз жеткізіңіз.
+2. "Campus-Demo" желісін таңдаңыз.
+3. Егер қосылу сәтсіз болса, сақталған желіні ұмытуды және қайта қосылуды байқап көріңіз.
+4. Егер мәселе шешілмесе, билет дайындамас бұрын қызметтің статусын тексеріңіз.
+
+Сіз қандай қадамдарды орындадыңыз?
+
+=== restart_process: the previous process exited; a NEW process opens the same storage ===
+--- Process 2 (pid 31700) ---
+Command: python run_scenarios.py --child S12 --segment 1
+
+user_id=demo-user-a  thread_id=preference-a2  status_profile=normal
+USER: Which language did I ask you to use? What can you help with?
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: {'language': 'Kazakh'}
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = Kazakh
+       memory_note = read user memory for demo-user-a: {'language': 'Kazakh'}
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL ANSWER: Сіз мені қазақ тілінде жауап беруімді сұрадыңыз. Мен Wi-Fi мәселелерін шешу, парольді қалпына келтіру бойынша нұсқаулар беру, қызметтің күйін тексеру және жергілікті билет жобаларын дайындау бойынша көмектесе аламын.
+       model_calls = 1
+Information sources used: USER MEMORY (language=Kazakh)
+Model calls this turn: 1   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: Сіз мені қазақ тілінде жауап беруімді сұрадыңыз. Мен Wi-Fi мәселелерін шешу, парольді қалпына келтіру бойынша нұсқаулар беру, қызметтің күйін тексеру және жергілікті билет жобаларын дайындау бойынша көмектесе аламын.
+

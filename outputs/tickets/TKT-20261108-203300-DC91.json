@@ -1,0 +1,16 @@
+{
+  "ticket_id": "TKT-20261108-203300-DC91",
+  "status": "draft",
+  "user_id": "demo-user-a",
+  "thread_id": "s06",
+  "category": "wifi",
+  "summary": "Unable to connect to Campus-Demo network.",
+  "steps_tried": [
+    "Enabled Wi-Fi and forgot the saved network."
+  ],
+  "service_status": "operational",
+  "status_profile": "normal",
+  "reference_ids": [
+    "GUIDE-WIFI"
+  ]
+}

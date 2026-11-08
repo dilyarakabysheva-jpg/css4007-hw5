@@ -1,0 +1,40 @@
+Scenario: S07 - The same request during a Wi-Fi outage
+Part: 2   graph_variant: default
+Status snapshot: wifi_outage
+Model: REAL MODEL - OpenAI gpt-4o-mini
+Run at: 2026-11-08T20:33:09
+
+Storage folder (reset before scenario: True): local-storage/scenarios
+--- Process 1 (pid 31340) ---
+Command: python run_scenarios.py --child S07 --segment 0
+
+user_id=demo-user-a  thread_id=s07  status_profile=wifi_outage
+USER: I enabled Wi-Fi and forgot the saved network, but Campus-Demo still will not connect. Check whether Wi-Fi is down. If it is operating, prepare a ticket about this problem.
+
+Read from CONVERSATION MEMORY (checkpoint of this thread): 0 earlier messages
+Read from USER MEMORY: read user memory for demo-user-a: nothing saved
+Nodes visited and state updates:
+  1. load_user_memory
+       user_language = None
+       memory_note = read user memory for demo-user-a: nothing saved
+       model_calls = 0
+       loop_limit_reached = False
+  2. agent
+       MODEL REQUESTS TOOLS: check_service_status({"service": "wifi"})
+       model_calls = 1
+  3. tools
+       TOOL RESULT check_service_status: {"service": "wifi", "status": "outage", "message": "The demo Wi-Fi service is unavailable across campus. The fixture gives no repair time.", "status_profile": "wifi_outage", "source": "data/service_status.json"}
+       reference_ids = []
+       tickets = []
+  4. agent
+       MODEL ANSWER: It looks like there is currently an outage with the Wi-Fi service across campus, so I cannot prepare a ticket for you. Unfortunately, the fixture does not provide a repair time.
+
+If you would like, I can draft a ticket explaining that the Wi-Fi service is unavailable. Would you like me to do that?
+       model_calls = 2
+Information sources used: STATUS SNAPSHOT data/service_status.json profile=wifi_outage
+Model calls this turn: 2   loop limit reached: False
+Local ticket files in this conversation: none
+HELPDESK: It looks like there is currently an outage with the Wi-Fi service across campus, so I cannot prepare a ticket for you. Unfortunately, the fixture does not provide a repair time.
+
+If you would like, I can draft a ticket explaining that the Wi-Fi service is unavailable. Would you like me to do that?
+
